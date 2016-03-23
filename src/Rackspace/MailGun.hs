@@ -62,8 +62,9 @@ buildBase msg = partText "from" (from msg)
 sendMessage :: (MonadIO m, MonadBaseControl IO m, MonadThrow m) =>
                 String -> String -> Message -> m (Response LBS.ByteString)
 sendMessage domain apiKey message = do
-        withManager $ \manager -> do
-            sendWith manager domain apiKey message
+  manager <- liftIO $ newManager tlsManagerSettings
+  res <- sendWith manager domain apiKey message
+  return res
 
 sendWith :: (MonadIO m, MonadBaseControl IO m, MonadThrow m) =>
             Manager -> String -> String -> Message -> m (Response LBS.ByteString)
